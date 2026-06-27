@@ -4938,3 +4938,44 @@ body.dark-theme .not-found-card h1 {
     width: 100%;
   }
 }
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+html[data-theme="dark"],
+body.dark-theme,
+body.dark-theme #root {
+  background: #020617 !important;
+}
+
+body.dark-theme {
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 28%),
+    linear-gradient(135deg, #020617, #0f172a) !important;
+}
+
+body.dark-theme .main-container {
+  background: transparent;
+}
+
+body.dark-theme ::selection {
+  background: rgba(56, 189, 248, 0.35);
+}
+
+body.dark-theme::-webkit-scrollbar {
+  width: 12px;
+}
+
+body.dark-theme::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+body.dark-theme::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+  border: 3px solid #020617;
+}
