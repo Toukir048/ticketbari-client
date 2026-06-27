@@ -19,6 +19,10 @@ import MyBookings from "../pages/dashboard/user/MyBookings";
 import Transactions from "../pages/dashboard/user/Transactions";
 import AddTicket from "../pages/dashboard/vendor/AddTicket";
 import VendorMyTickets from "../pages/dashboard/vendor/VendorMyTickets";
+import RequestedBookings from "../pages/dashboard/vendor/RequestedBookings";
+import VendorRevenue from "../pages/dashboard/vendor/VendorRevenue";
+
+
 const router = createBrowserRouter([
     {
         path: "/",
@@ -101,10 +105,7 @@ const router = createBrowserRouter([
                         path: "requested-bookings",
                         element: (
                             <RoleRoute allowedRoles={["vendor"]}>
-                                <DashboardPlaceholder
-                                    title="Requested Bookings"
-                                    description="Vendor accepted and rejected booking request actions will be added here."
-                                />
+                                <RequestedBookings />
                             </RoleRoute>
                         ),
                     },
@@ -112,10 +113,7 @@ const router = createBrowserRouter([
                         path: "revenue",
                         element: (
                             <RoleRoute allowedRoles={["vendor"]}>
-                                <DashboardPlaceholder
-                                    title="Revenue Overview"
-                                    description="Vendor revenue chart and transaction summary will be added here."
-                                />
+                                <VendorRevenue />
                             </RoleRoute>
                         ),
                     },
