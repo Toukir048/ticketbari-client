@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
+
 import useAuth from "../hooks/useAuth";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -7,7 +8,7 @@ const PrivateRoute = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return <LoadingSpinner message="Checking login session..." />;
+    return <LoadingSpinner message="Restoring secure session..." />;
   }
 
   if (!user) {

@@ -9,7 +9,6 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import DashboardHome from "../pages/dashboard/DashboardHome";
 import Profile from "../pages/dashboard/Profile";
-import DashboardPlaceholder from "../pages/dashboard/DashboardPlaceholder";
 import NotFound from "../pages/NotFound";
 
 import PrivateRoute from "./PrivateRoute";
@@ -24,7 +23,8 @@ import VendorRevenue from "../pages/dashboard/vendor/VendorRevenue";
 import ManageUsers from "../pages/dashboard/admin/ManageUsers";
 import ManageTickets from "../pages/dashboard/admin/ManageTickets";
 import AdvertiseTickets from "../pages/dashboard/admin/AdvertiseTickets";
-
+import PublicRoute from "./PublicRoute";
+import Unauthorized from "../pages/Unauthorized";
 
 const router = createBrowserRouter([
     {
@@ -50,11 +50,28 @@ const router = createBrowserRouter([
             },
             {
                 path: "login",
-                element: <Login />,
+                element: (
+                    <PublicRoute>
+                        <Login />
+                    </PublicRoute>
+                ),
             },
+
             {
                 path: "register",
-                element: <Register />,
+                element: (
+                    <PublicRoute>
+                        <Register />
+                    </PublicRoute>
+                ),
+            },
+            {
+                path: "unauthorized",
+                element: (
+                    <PrivateRoute>
+                        <Unauthorized />
+                    </PrivateRoute>
+                ),
             },
             {
                 path: "dashboard",
