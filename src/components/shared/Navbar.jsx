@@ -1,6 +1,9 @@
 import { NavLink } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 const Navbar = () => {
+  const { user, role, logoutUser } = useAuth();
+
   const navLinkClass = ({ isActive }) =>
     isActive ? "nav-link active-link" : "nav-link";
 
@@ -20,17 +23,27 @@ const Navbar = () => {
             All Tickets
           </NavLink>
 
-          <NavLink to="/dashboard" className={navLinkClass}>
-            Dashboard
-          </NavLink>
+          {user && (
+            <NavLink to="/dashboard" className={navLinkClass}>
+              Dashboard {role ? `(${role})` : ""}
+            </NavLink>
+          )}
 
-          <NavLink to="/login" className={navLinkClass}>
-            Login
-          </NavLink>
+          {!user ? (
+            <>
+              <NavLink to="/login" className={navLinkClass}>
+                Login
+              </NavLink>
 
-          <NavLink to="/register" className={navLinkClass}>
-            Register
-          </NavLink>
+              <NavLink to="/register" className={navLinkClass}>
+                Register
+              </NavLink>
+            </>
+          ) : (
+            <button type="button" className="logout-btn" onClick={logoutUser}>
+              Logout
+            </button>
+          )}
         </nav>
       </div>
     </header>
