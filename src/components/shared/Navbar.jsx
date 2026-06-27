@@ -1,6 +1,16 @@
-import { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
-import { FaBars, FaMoon, FaSun, FaTicketAlt, FaTimes } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import {
+  FaBars,
+  FaChevronDown,
+  FaMoon,
+  FaSignOutAlt,
+  FaSun,
+  FaTachometerAlt,
+  FaTicketAlt,
+  FaTimes,
+  FaUserCircle,
+} from "react-icons/fa";
 
 import useAuth from "../../hooks/useAuth";
 import useTheme from "../../hooks/useTheme";
@@ -10,23 +20,41 @@ const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  const navLinkClass = ({ isActive }) =>
-    isActive ? "nav-link active-nav-link" : "nav-link";
+  const userMenuRef = useRef(null);
 
-  const closeMobileMenu = () => {
+  const closeAll = () => {
     setIsMenuOpen(false);
+    setIsUserMenuOpen(false);
   };
 
   const handleLogout = async () => {
     await logoutUser();
-    closeMobileMenu();
+    closeAll();
   };
 
+  const navLinkClass = ({ isActive }) =>
+    isActive ? "tb-nav-link tb-nav-link-active" : "tb-nav-link";
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <header className={`navbar ${isMenuOpen ? "mobile-menu-open" : ""}`}>
-      <div className="navbar-top">
-        <Link to="/" className="brand-logo" onClick={closeMobileMenu}>
+    <header className="tb-main-nav">
+      <div className="tb-nav-shell">
+        <Link to="/" className="tb-nav-brand" onClick={closeAll}>
           <span>
             <FaTicketAlt />
           </span>
@@ -35,85 +63,119 @@ const Navbar = () => {
 
         <button
           type="button"
-          className="mobile-menu-btn"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle navigation menu"
+          className="tb-nav-mobile-btn"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          aria-label="Toggle navigation"
         >
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
-      </div>
 
-      <div className="navbar-collapse">
-        <nav className="nav-menu">
-          <NavLink to="/" className={navLinkClass} onClick={closeMobileMenu}>
-            Home
-          </NavLink>
-
-          <NavLink
-            to="/all-tickets"
-            className={navLinkClass}
-            onClick={closeMobileMenu}
-          >
-            All Tickets
-          </NavLink>
-
-          {user && (
-            <NavLink
-              to="/dashboard"
-              className={navLinkClass}
-              onClick={closeMobileMenu}
-            >
-              Dashboard
+        <div className={`tb-nav-panel ${isMenuOpen ? "tb-nav-panel-open" : ""}`}>
+          <nav className="tb-nav-links">
+            <NavLink to="/" className={navLinkClass} onClick={closeAll}>
+              Home
             </NavLink>
-          )}
-        </nav>
 
-        <div className="nav-actions">
-          <button
-            type="button"
-            className="theme-toggle-btn"
-            onClick={toggleTheme}
-            aria-label="Toggle dark light theme"
-          >
-            {theme === "dark" ? <FaSun /> : <FaMoon />}
-            <span>{theme === "dark" ? "Light" : "Dark"}</span>
-          </button>
+            <NavLink to="/all-tickets" className={navLinkClass} onClick={closeAll}>
+              All Tickets
+            </NavLink>
 
-          {user ? (
-            <div className="nav-user-box">
-              <div className="nav-user-meta">
-                <strong>{user.name || "User"}</strong>
-                <span>{role || "user"}</span>
+            {user && (
+              <NavLink to="/dashboard" className={navLinkClass} onClick={closeAll}>
+                Dashboard
+              </NavLink>
+            )}
+          </nav>
+
+          <div className="tb-nav-actions">
+            <button type="button" className="tb-nav-theme-btn" onClick={toggleTheme}>
+              {theme === "dark" ? <FaSun /> : <FaMoon />}
+              <span>{theme === "dark" ? "Light" : "Dark"}</span>
+            </button>
+
+            {!loading && !user && (
+              <div className="tb-nav-auth">
+                <Link to="/login" className="tb-nav-login" onClick={closeAll}>
+                  Login
+                </Link>
+
+                <Link to="/register" className="tb-nav-register" onClick={closeAll}>
+                  Register
+                </Link>
               </div>
+            )}
 
-              <button
-                type="button"
-                className="logout-btn"
-                onClick={handleLogout}
-                disabled={loading}
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div className="auth-nav-links">
-              <NavLink
-                to="/login"
-                className={navLinkClass}
-                onClick={closeMobileMenu}
-              >
-                Login
-              </NavLink>
+            {!loading && user && (
+              <div className="tb-nav-user-wrap" ref={userMenuRef}>
+                <button
+                  type="button"
+                  className="tb-nav-user-btn"
+                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                >
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt={user.name || "User"} />
+                  ) : (
+                    <span className="tb-nav-user-fallback">
+                      {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                    </span>
+                  )}
 
-              <NavLink
-                to="/register"
-                className="register-nav-btn"
-                onClick={closeMobileMenu}
-              >
-                Register
-              </NavLink>
-            </div>
-          )}
+                  <div>
+                    <strong>{user?.name || "TicketBari User"}</strong>
+                    <small>{role || "user"}</small>
+                  </div>
+
+                  <FaChevronDown />
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className="tb-nav-user-menu">
+                    <div className="tb-nav-user-head">
+                      {user?.photoURL ? (
+                        <img src={user.photoURL} alt={user.name || "User"} />
+                      ) : (
+                        <span className="tb-nav-user-fallback">
+                          {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                        </span>
+                      )}
+
+                      <div>
+                        <h4>{user?.name || "TicketBari User"}</h4>
+                        <p>{user?.email}</p>
+                      </div>
+                    </div>
+
+                    <Link
+                      to="/dashboard/profile"
+                      className="tb-nav-user-item"
+                      onClick={closeAll}
+                    >
+                      <FaUserCircle />
+                      My Profile
+                    </Link>
+
+                    <Link
+                      to="/dashboard"
+                      className="tb-nav-user-item"
+                      onClick={closeAll}
+                    >
+                      <FaTachometerAlt />
+                      Dashboard
+                    </Link>
+
+                    <button
+                      type="button"
+                      className="tb-nav-user-item tb-nav-user-logout"
+                      onClick={handleLogout}
+                    >
+                      <FaSignOutAlt />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
