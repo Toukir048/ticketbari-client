@@ -25,6 +25,7 @@ import ManageTickets from "../pages/dashboard/admin/ManageTickets";
 import AdvertiseTickets from "../pages/dashboard/admin/AdvertiseTickets";
 import PublicRoute from "./PublicRoute";
 import Unauthorized from "../pages/Unauthorized";
+import AuthCallback from "../pages/auth/AuthCallback";
 
 const router = createBrowserRouter([
     {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
                         <Register />
                     </PublicRoute>
                 ),
+            },
+            {
+                path: "auth/callback",
+                element: <AuthCallback />,
             },
             {
                 path: "unauthorized",

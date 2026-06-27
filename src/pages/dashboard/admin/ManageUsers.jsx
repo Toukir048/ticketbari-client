@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import { FaShieldAlt, FaUserCog, FaUserSlash, FaUsers } from "react-icons/fa";
+import { FaUserSlash, FaUsers } from "react-icons/fa";
 
 import axiosInstance from "../../../api/axiosInstance";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";

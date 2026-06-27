@@ -3,14 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { FaGoogle, FaTicketAlt } from "react-icons/fa";
-import { signInWithPopup } from "firebase/auth";
-
 import useAuth from "../../hooks/useAuth";
-import {
-  auth,
-  googleProvider,
-  isFirebaseReady,
-} from "../../config/firebase.config";
 
 const Register = () => {
   const { registerUser, googleLoginUser, loading } = useAuth();
@@ -70,39 +63,17 @@ const Register = () => {
     }
   };
 
-  const handleGoogleRegister = async () => {
-    if (!isFirebaseReady || !auth) {
-      Swal.fire(
-        "Firebase Config Missing",
-        "Please add Firebase environment variables in .env.local",
-        "warning"
-      );
-      return;
-    }
-
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-
-      await googleLoginUser(result.user);
-
-      Swal.fire({
-        icon: "success",
-        title: "Google Registration Successful",
-        text: "Welcome to TicketBari!",
-        timer: 1400,
-        showConfirmButton: false,
-      });
-
-      navigate(from, { replace: true });
-    } catch (error) {
-      Swal.fire(
-        "Google Registration Failed",
-        error.message || "Something went wrong.",
-        "error"
-      );
-    }
-  };
-
+ const handleGoogleRegister = async () => {
+  try {
+    await googleLoginUser();
+  } catch (error) {
+    Swal.fire(
+      "Google Registration Failed",
+      error.message || "Something went wrong.",
+      "error"
+    );
+  }
+};
   return (
     <section className="auth-page">
       <motion.div

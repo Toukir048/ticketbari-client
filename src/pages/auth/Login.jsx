@@ -3,14 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { FaGoogle, FaTicketAlt } from "react-icons/fa";
-import { signInWithPopup } from "firebase/auth";
 
 import useAuth from "../../hooks/useAuth";
-import {
-  auth,
-  googleProvider,
-  isFirebaseReady,
-} from "../../config/firebase.config";
 
 const Login = () => {
   const { loginUser, googleLoginUser, loading } = useAuth();
@@ -67,37 +61,16 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
-    if (!isFirebaseReady || !auth) {
-      Swal.fire(
-        "Firebase Config Missing",
-        "Please add Firebase environment variables in .env.local",
-        "warning"
-      );
-      return;
-    }
-
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-
-      await googleLoginUser(result.user);
-
-      Swal.fire({
-        icon: "success",
-        title: "Google Login Successful",
-        text: "Welcome to TicketBari!",
-        timer: 1400,
-        showConfirmButton: false,
-      });
-
-      navigate(from, { replace: true });
-    } catch (error) {
-      Swal.fire(
-        "Google Login Failed",
-        error.message || "Something went wrong.",
-        "error"
-      );
-    }
-  };
+  try {
+    await googleLoginUser();
+  } catch (error) {
+    Swal.fire(
+      "Google Login Failed",
+      error.message || "Something went wrong.",
+      "error"
+    );
+  }
+};
 
   return (
     <section className="auth-page">

@@ -1,8 +1,7 @@
-import { createContext, useEffect, useState } from "react";
-import { signOut } from "firebase/auth";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 import axiosInstance from "../api/axiosInstance";
-import { auth } from "../config/firebase.config";
+import { authClient } from "../lib/auth-client";
 
 export const AuthContext = createContext(null);
 
@@ -48,6 +47,20 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const syncBetterAuthUser = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      const response = await axiosInstance.get("/api/better-auth/sync");
+
+      setAuthData(response.data.user, response.data.role);
+
+      return response.data.user;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const loginUser = async (userInfo) => {
     return saveUserAndCreateToken(userInfo);
   };
@@ -56,14 +69,15 @@ const AuthProvider = ({ children }) => {
     return saveUserAndCreateToken(userInfo);
   };
 
-  const googleLoginUser = async (firebaseUser) => {
-    const userInfo = {
-      name: firebaseUser?.displayName || "Google User",
-      email: firebaseUser?.email,
-      photoURL: firebaseUser?.photoURL || "",
-    };
+  const googleLoginUser = async () => {
+    const clientUrl = import.meta.env.VITE_CLIENT_URL || window.location.origin;
 
-    return saveUserAndCreateToken(userInfo);
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: `${clientUrl}/auth/callback`,
+      errorCallbackURL: `${clientUrl}/login`,
+      newUserCallbackURL: `${clientUrl}/auth/callback`,
+    });
   };
 
   const refreshUser = async () => {
@@ -75,14 +89,17 @@ const AuthProvider = ({ children }) => {
       const profileResponse = await axiosInstance.get("/api/users/me");
       const roleResponse = await axiosInstance.get("/api/users/role");
 
-      const profile = profileResponse.data.user;
-      const userRole = roleResponse.data.role;
-
-      setAuthData(profile, userRole);
+      setAuthData(profileResponse.data.user, roleResponse.data.role);
     } catch {
-      setUser(null);
-      setDbUser(null);
-      setRole(null);
+      try {
+        const response = await axiosInstance.get("/api/better-auth/sync");
+
+        setAuthData(response.data.user, response.data.role);
+      } catch {
+        setUser(null);
+        setDbUser(null);
+        setRole(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -92,10 +109,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
 
     try {
-      if (auth) {
-        await signOut(auth);
-      }
-
+      await authClient.signOut();
       await axiosInstance.post("/api/jwt/logout");
     } finally {
       setUser(null);
@@ -117,6 +131,7 @@ const AuthProvider = ({ children }) => {
     loginUser,
     registerUser,
     googleLoginUser,
+    syncBetterAuthUser,
     logoutUser,
     refreshUser,
     saveUserAndCreateToken,
