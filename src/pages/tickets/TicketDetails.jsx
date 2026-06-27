@@ -24,20 +24,90 @@ const transportIcons = {
   Train: <FaTrain />,
   Launch: <FaShip />,
   Plane: <FaPlaneDeparture />,
+  Air: <FaPlaneDeparture />,
+};
+
+const getSafeDepartureDateTime = (ticket) => {
+  if (!ticket) return "";
+
+  if (ticket.departureDateTime) {
+    return ticket.departureDateTime;
+  }
+
+  if (ticket.departureDate && ticket.departureTime) {
+    return `${ticket.departureDate}T${ticket.departureTime}`;
+  }
+
+  if (ticket.date && ticket.time) {
+    return `${ticket.date}T${ticket.time}`;
+  }
+
+  if (ticket.journeyDate && ticket.departureTime) {
+    return `${ticket.journeyDate}T${ticket.departureTime}`;
+  }
+
+  if (ticket.travelDate && ticket.departureTime) {
+    return `${ticket.travelDate}T${ticket.departureTime}`;
+  }
+
+  if (ticket.departureDate) {
+    return ticket.departureDate;
+  }
+
+  if (ticket.journeyDate) {
+    return ticket.journeyDate;
+  }
+
+  if (ticket.travelDate) {
+    return ticket.travelDate;
+  }
+
+  if (ticket.date) {
+    return ticket.date;
+  }
+
+  return "";
 };
 
 const formatDateTime = (dateValue) => {
   if (!dateValue) return "Date not set";
 
-  return new Date(dateValue).toLocaleString("en-US", {
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(dateValue);
+  }
+
+  return date.toLocaleString("en-US", {
     dateStyle: "full",
     timeStyle: "short",
   });
 };
 
 const getCountdown = (departureDateTime) => {
+  if (!departureDateTime) {
+    return {
+      expired: false,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  }
+
   const now = new Date().getTime();
   const departure = new Date(departureDateTime).getTime();
+
+  if (Number.isNaN(departure)) {
+    return {
+      expired: false,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  }
+
   const distance = departure - now;
 
   if (distance <= 0) {
@@ -79,6 +149,16 @@ const TicketDetails = () => {
     },
   });
 
+  const safeDepartureDateTime = useMemo(
+    () => getSafeDepartureDateTime(ticketData),
+    [ticketData]
+  );
+
+  const countdown = useMemo(
+    () => getCountdown(safeDepartureDateTime),
+    [safeDepartureDateTime]
+  );
+
   const {
     data: seatMapData,
     isLoading: seatLoading,
@@ -92,11 +172,6 @@ const TicketDetails = () => {
     enabled: Boolean(ticketData && ticketData.transportType === "Bus"),
     retry: false,
   });
-
-  const countdown = useMemo(
-    () => getCountdown(ticketData?.departureDateTime),
-    [ticketData?.departureDateTime]
-  );
 
   const bookingMutation = useMutation({
     mutationFn: async (bookingPayload) => {
@@ -127,9 +202,28 @@ const TicketDetails = () => {
     },
   });
 
-  const isBusTicket = ticketData?.transportType === "Bus";
-  const availableSeats = Number(ticketData?.quantity || 0);
-  const totalPrice = Number(ticketData?.price || 0) * Number(bookingQuantity || 0);
+  const ticketTitle =
+    ticketData?.title || ticketData?.ticketTitle || "Untitled Ticket";
+
+  const transportType = ticketData?.transportType || "Ticket";
+
+  const ticketImage =
+    ticketData?.image || ticketData?.imageURL || ticketData?.imageUrl || "";
+
+  const ticketFacilities = Array.isArray(ticketData?.facilities)
+    ? ticketData.facilities
+    : Array.isArray(ticketData?.perks)
+    ? ticketData.perks
+    : [];
+
+  const isBusTicket = transportType === "Bus";
+
+  const availableSeats = Number(
+    ticketData?.availableQuantity ?? ticketData?.quantity ?? 0
+  );
+
+  const totalPrice =
+    Number(ticketData?.price || 0) * Number(bookingQuantity || 0);
 
   const handleSeatToggle = (seat) => {
     if (seat.status === "booked") return;
@@ -244,8 +338,8 @@ const TicketDetails = () => {
           animate={{ opacity: 1, x: 0 }}
         >
           <div className="details-image-wrap">
-            {ticketData.image ? (
-              <img src={ticketData.image} alt={ticketData.title} />
+            {ticketImage ? (
+              <img src={ticketImage} alt={ticketTitle} />
             ) : (
               <div className="details-image-fallback">
                 <FaTicketAlt />
@@ -253,22 +347,22 @@ const TicketDetails = () => {
             )}
 
             <span className="details-transport-badge">
-              {transportIcons[ticketData.transportType] || <FaTicketAlt />}
-              {ticketData.transportType}
+              {transportIcons[transportType] || <FaTicketAlt />}
+              {transportType}
             </span>
           </div>
 
           <div className="details-route-card">
             <div>
               <small>From</small>
-              <strong>{ticketData.from}</strong>
+              <strong>{ticketData.from || "Not set"}</strong>
             </div>
 
             <span className="details-route-dash"></span>
 
             <div>
               <small>To</small>
-              <strong>{ticketData.to}</strong>
+              <strong>{ticketData.to || "Not set"}</strong>
             </div>
           </div>
         </motion.div>
@@ -280,13 +374,13 @@ const TicketDetails = () => {
         >
           <span className="details-kicker">Protected Ticket Details</span>
 
-          <h1>{ticketData.title}</h1>
+          <h1>{ticketTitle}</h1>
 
           <div className="details-meta-grid">
             <div>
               <FaCalendarAlt />
               <span>Departure</span>
-              <strong>{formatDateTime(ticketData.departureDateTime)}</strong>
+              <strong>{formatDateTime(safeDepartureDateTime)}</strong>
             </div>
 
             <div>
@@ -298,13 +392,13 @@ const TicketDetails = () => {
             <div>
               <FaMapMarkerAlt />
               <span>Vendor</span>
-              <strong>{ticketData.vendorName}</strong>
+              <strong>{ticketData.vendorName || "TicketBari Vendor"}</strong>
             </div>
 
             <div>
               <FaTicketAlt />
               <span>Price</span>
-              <strong>${ticketData.price}</strong>
+              <strong>${ticketData.price || 0}</strong>
             </div>
           </div>
 
@@ -334,11 +428,11 @@ const TicketDetails = () => {
             </div>
           </div>
 
-          {ticketData.perks?.length > 0 && (
+          {ticketFacilities.length > 0 && (
             <div className="perks-box">
-              <h3>Ticket Perks</h3>
+              <h3>Ticket Facilities</h3>
               <div>
-                {ticketData.perks.map((perk) => (
+                {ticketFacilities.map((perk) => (
                   <span key={perk}>{perk}</span>
                 ))}
               </div>
@@ -376,7 +470,7 @@ const TicketDetails = () => {
             </button>
 
             <span className="modal-kicker">Booking Request</span>
-            <h2>{ticketData.title}</h2>
+            <h2>{ticketTitle}</h2>
             <p>
               {ticketData.from} → {ticketData.to}
             </p>
