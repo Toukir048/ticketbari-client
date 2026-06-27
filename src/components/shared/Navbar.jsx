@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@heroui/react";
 import { Link, NavLink } from "react-router-dom";
 import {
   FaBars,
@@ -34,8 +35,13 @@ const Navbar = () => {
     closeAll();
   };
 
+  const baseNavLinkClass =
+    "inline-flex min-h-10 items-center justify-center rounded-full px-4 py-2 text-sm font-black text-slate-700 transition hover:bg-blue-600/10 hover:text-blue-600 dark:text-slate-100 dark:hover:bg-sky-400/10 dark:hover:text-sky-300";
+
   const navLinkClass = ({ isActive }) =>
-    isActive ? "tb-nav-link tb-nav-link-active" : "tb-nav-link";
+    isActive
+      ? `${baseNavLinkClass} bg-blue-600/10 text-blue-600 dark:bg-sky-400/10 dark:text-sky-300`
+      : baseNavLinkClass;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -52,26 +58,35 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className="tb-main-nav">
-      <div className="tb-nav-shell">
-        <Link to="/" className="tb-nav-brand" onClick={closeAll}>
-          <span>
+    <header className="sticky top-2 z-[999999] mx-auto my-3 w-[min(1180px,calc(100%-20px))] sm:top-3 sm:my-4 sm:w-[min(1180px,calc(100%-32px))]">
+      <div className="flex min-h-[76px] flex-wrap items-center gap-4 rounded-[26px] border border-slate-200 bg-white/95 p-3 shadow-[0_10px_28px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/95 dark:shadow-[0_26px_72px_rgba(2,6,23,0.34)] lg:flex-nowrap">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-3 whitespace-nowrap text-2xl font-black text-slate-950 no-underline dark:text-slate-50"
+          onClick={closeAll}
+        >
+          <span className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white">
             <FaTicketAlt />
           </span>
           TicketBari
         </Link>
 
-        <button
+        <Button
           type="button"
-          className="tb-nav-mobile-btn"
+          isIconOnly
+          className="ml-auto grid size-11 min-w-11 place-items-center rounded-2xl bg-slate-900 text-white lg:hidden"
           onClick={() => setIsMenuOpen((prev) => !prev)}
           aria-label="Toggle navigation"
         >
           {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
+        </Button>
 
-        <div className={`tb-nav-panel ${isMenuOpen ? "tb-nav-panel-open" : ""}`}>
-          <nav className="tb-nav-links">
+        <div
+          className={`${
+            isMenuOpen ? "flex" : "hidden"
+          } w-full flex-col items-stretch gap-3 pt-3 lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:gap-4 lg:pt-0`}
+        >
+          <nav className="flex flex-col items-stretch gap-2 lg:flex-1 lg:flex-row lg:items-center lg:justify-center">
             <NavLink to="/" className={navLinkClass} onClick={closeAll}>
               Home
             </NavLink>
@@ -87,67 +102,97 @@ const Navbar = () => {
             )}
           </nav>
 
-          <div className="tb-nav-actions">
-            <button type="button" className="tb-nav-theme-btn" onClick={toggleTheme}>
+          <div className="flex flex-col items-stretch gap-2 lg:flex-row lg:items-center lg:gap-2">
+            <Button
+              type="button"
+              variant="bordered"
+              className="min-h-10 rounded-full border-slate-200 bg-white px-4 font-black text-slate-950 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50"
+              onPress={toggleTheme}
+            >
               {theme === "dark" ? <FaSun /> : <FaMoon />}
               <span>{theme === "dark" ? "Light" : "Dark"}</span>
-            </button>
+            </Button>
 
             {!loading && !user && (
-              <div className="tb-nav-auth">
-                <Link to="/login" className="tb-nav-login" onClick={closeAll}>
+              <div className="flex flex-col items-stretch gap-2 lg:flex-row lg:items-center">
+                <Link
+                  to="/login"
+                  className="inline-flex min-h-10 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 no-underline transition hover:border-blue-200 hover:text-blue-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50"
+                  onClick={closeAll}
+                >
                   Login
                 </Link>
 
-                <Link to="/register" className="tb-nav-register" onClick={closeAll}>
+                <Link
+                  to="/register"
+                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-violet-600 px-4 text-sm font-black text-white no-underline shadow-[0_14px_30px_rgba(37,99,235,0.2)] transition hover:-translate-y-0.5"
+                  onClick={closeAll}
+                >
                   Register
                 </Link>
               </div>
             )}
 
             {!loading && user && (
-              <div className="tb-nav-user-wrap" ref={userMenuRef}>
-                <button
+              <div className="relative z-[1000000] w-full lg:w-auto" ref={userMenuRef}>
+                <Button
                   type="button"
-                  className="tb-nav-user-btn"
-                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                  variant="bordered"
+                  className="min-h-11 w-full justify-between rounded-full border-slate-200 bg-white px-2 py-1.5 text-slate-950 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 lg:w-auto lg:justify-start"
+                  onPress={() => setIsUserMenuOpen((prev) => !prev)}
                 >
                   {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.name || "User"} />
+                    <img
+                      src={user.photoURL}
+                      alt={user.name || "User"}
+                      className="size-9 shrink-0 rounded-full object-cover"
+                    />
                   ) : (
-                    <span className="tb-nav-user-fallback">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-blue-600 to-violet-600 font-black text-white">
                       {user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </span>
                   )}
 
-                  <div>
-                    <strong>{user?.name || "TicketBari User"}</strong>
-                    <small>{role || "user"}</small>
+                  <div className="grid min-w-0 text-left leading-tight">
+                    <strong className="max-w-32 truncate text-sm font-black text-slate-950 dark:text-slate-50">
+                      {user?.name || "TicketBari User"}
+                    </strong>
+                    <small className="text-xs font-black capitalize text-blue-600 dark:text-sky-300">
+                      {role || "user"}
+                    </small>
                   </div>
 
                   <FaChevronDown />
-                </button>
+                </Button>
 
                 {isUserMenuOpen && (
-                  <div className="tb-nav-user-menu">
-                    <div className="tb-nav-user-head">
+                  <div className="mt-3 w-full rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_20px_55px_rgba(15,23,42,0.1)] dark:border-slate-700 dark:bg-slate-900 lg:absolute lg:right-0 lg:top-full lg:mt-3 lg:w-72">
+                    <div className="mb-2 flex items-center gap-3 rounded-2xl bg-slate-50 p-3 dark:bg-slate-800">
                       {user?.photoURL ? (
-                        <img src={user.photoURL} alt={user.name || "User"} />
+                        <img
+                          src={user.photoURL}
+                          alt={user.name || "User"}
+                          className="size-9 shrink-0 rounded-full object-cover"
+                        />
                       ) : (
-                        <span className="tb-nav-user-fallback">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-blue-600 to-violet-600 font-black text-white">
                           {user?.name?.charAt(0)?.toUpperCase() || "U"}
                         </span>
                       )}
 
-                      <div>
-                        <h4>{user?.name || "TicketBari User"}</h4>
-                        <p>{user?.email}</p>
+                      <div className="min-w-0">
+                        <h4 className="m-0 text-sm font-black text-slate-950 dark:text-slate-50">
+                          {user?.name || "TicketBari User"}
+                        </h4>
+                        <p className="mt-1 break-all text-xs font-bold text-slate-500 dark:text-slate-300">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
 
                     <Link
                       to="/dashboard/profile"
-                      className="tb-nav-user-item"
+                      className="flex min-h-11 items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-black text-slate-700 no-underline transition hover:bg-blue-600/10 hover:text-blue-600 dark:text-slate-100 dark:hover:text-sky-300"
                       onClick={closeAll}
                     >
                       <FaUserCircle />
@@ -156,21 +201,22 @@ const Navbar = () => {
 
                     <Link
                       to="/dashboard"
-                      className="tb-nav-user-item"
+                      className="flex min-h-11 items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-black text-slate-700 no-underline transition hover:bg-blue-600/10 hover:text-blue-600 dark:text-slate-100 dark:hover:text-sky-300"
                       onClick={closeAll}
                     >
                       <FaTachometerAlt />
                       Dashboard
                     </Link>
 
-                    <button
+                    <Button
                       type="button"
-                      className="tb-nav-user-item tb-nav-user-logout"
-                      onClick={handleLogout}
+                      variant="light"
+                      className="min-h-11 w-full justify-start rounded-2xl px-3 py-2.5 text-sm font-black text-red-600"
+                      onPress={handleLogout}
                     >
                       <FaSignOutAlt />
                       Logout
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>

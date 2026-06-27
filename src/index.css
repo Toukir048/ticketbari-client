@@ -1,3 +1,8 @@
+@import "tailwindcss";
+@import "@heroui/react/styles";
+
+@custom-variant dark (&:where(.dark-theme, .dark-theme *));
+
 * {
   box-sizing: border-box;
 }
@@ -5575,346 +5580,6 @@ body {
 }
 
 /* =========================================================
-   Final conflict-free Navbar
-   ========================================================= */
-
-.tb-main-nav,
-.tb-main-nav * {
-  box-sizing: border-box;
-}
-
-.tb-main-nav {
-  position: sticky !important;
-  top: 12px !important;
-  z-index: 999999 !important;
-  width: min(1180px, calc(100% - 32px)) !important;
-  margin: 14px auto 22px !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: 0 !important;
-  overflow: visible !important;
-}
-
-.tb-nav-shell {
-  width: 100% !important;
-  min-height: 76px !important;
-  padding: 12px 14px !important;
-  border-radius: 26px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 18px !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-  border: 1px solid var(--tb-border) !important;
-  box-shadow: var(--tb-shadow-sm) !important;
-  backdrop-filter: blur(18px) !important;
-  overflow: visible !important;
-}
-
-.tb-nav-brand {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 11px !important;
-  color: var(--tb-heading) !important;
-  font-size: 24px !important;
-  font-weight: 950 !important;
-  text-decoration: none !important;
-  white-space: nowrap !important;
-}
-
-.tb-nav-brand span {
-  width: 46px !important;
-  height: 46px !important;
-  display: grid !important;
-  place-items: center !important;
-  border-radius: 17px !important;
-  color: #ffffff !important;
-  background: var(--tb-gradient-primary) !important;
-}
-
-.tb-nav-panel {
-  flex: 1 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 18px !important;
-  overflow: visible !important;
-}
-
-.tb-nav-links,
-.tb-nav-actions,
-.tb-nav-auth {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-
-.tb-nav-links {
-  justify-content: center !important;
-  flex: 1 !important;
-}
-
-.tb-nav-link {
-  min-height: 42px !important;
-  padding: 10px 15px !important;
-  border-radius: 999px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #334155 !important;
-  font-size: 15px !important;
-  font-weight: 900 !important;
-  text-decoration: none !important;
-  white-space: nowrap !important;
-}
-
-.tb-nav-link:hover,
-.tb-nav-link-active {
-  color: var(--tb-primary) !important;
-  background: rgba(37, 99, 235, 0.1) !important;
-}
-
-.tb-nav-theme-btn,
-.tb-nav-login,
-.tb-nav-register {
-  min-height: 42px !important;
-  padding: 10px 15px !important;
-  border-radius: 999px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  font-size: 14px !important;
-  font-weight: 900 !important;
-  text-decoration: none !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
-}
-
-.tb-nav-theme-btn,
-.tb-nav-login {
-  color: var(--tb-heading) !important;
-  background: #ffffff !important;
-  border: 1px solid var(--tb-border) !important;
-}
-
-.tb-nav-register {
-  color: #ffffff !important;
-  border: 0 !important;
-  background: var(--tb-gradient-primary) !important;
-}
-
-.tb-nav-mobile-btn {
-  display: none !important;
-  width: 46px !important;
-  height: 46px !important;
-  margin-left: auto !important;
-  border: 0 !important;
-  border-radius: 16px !important;
-  color: #ffffff !important;
-  font-size: 18px !important;
-  cursor: pointer !important;
-  background: var(--tb-dark-surface) !important;
-}
-
-.tb-nav-user-wrap {
-  position: relative !important;
-  z-index: 1000000 !important;
-  overflow: visible !important;
-}
-
-.tb-nav-user-btn {
-  min-height: 46px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  padding: 6px 12px 6px 6px !important;
-  border-radius: 999px !important;
-  color: var(--tb-heading) !important;
-  background: #ffffff !important;
-  border: 1px solid var(--tb-border) !important;
-  cursor: pointer !important;
-}
-
-.tb-nav-user-btn img,
-.tb-nav-user-head img,
-.tb-nav-user-fallback {
-  width: 38px !important;
-  height: 38px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  flex-shrink: 0 !important;
-}
-
-.tb-nav-user-fallback {
-  display: grid !important;
-  place-items: center !important;
-  color: #ffffff !important;
-  font-weight: 950 !important;
-  background: var(--tb-gradient-primary) !important;
-}
-
-.tb-nav-user-btn div {
-  display: grid !important;
-  text-align: left !important;
-  line-height: 1.1 !important;
-}
-
-.tb-nav-user-btn strong {
-  max-width: 120px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-  color: var(--tb-heading) !important;
-  font-size: 14px !important;
-  font-weight: 950 !important;
-}
-
-.tb-nav-user-btn small {
-  color: var(--tb-primary) !important;
-  font-size: 12px !important;
-  font-weight: 900 !important;
-  text-transform: capitalize !important;
-}
-
-.tb-nav-user-menu {
-  position: absolute !important;
-  top: calc(100% + 12px) !important;
-  right: 0 !important;
-  width: 292px !important;
-  padding: 14px !important;
-  border-radius: 24px !important;
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  background: #ffffff !important;
-  border: 1px solid var(--tb-border) !important;
-  box-shadow: var(--tb-shadow-md) !important;
-  z-index: 1000001 !important;
-}
-
-.tb-nav-user-head {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  padding: 10px !important;
-  margin-bottom: 10px !important;
-  border-radius: 18px !important;
-  background: var(--tb-surface-soft) !important;
-}
-
-.tb-nav-user-head h4 {
-  margin: 0 !important;
-  color: var(--tb-heading) !important;
-  font-size: 15px !important;
-  font-weight: 950 !important;
-}
-
-.tb-nav-user-head p {
-  margin: 4px 0 0 !important;
-  color: var(--tb-muted) !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  word-break: break-all !important;
-}
-
-.tb-nav-user-item {
-  width: 100% !important;
-  min-height: 44px !important;
-  padding: 12px 10px !important;
-  border-radius: 14px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 11px !important;
-  border: 0 !important;
-  background: transparent !important;
-  color: #334155 !important;
-  font-size: 14px !important;
-  font-weight: 900 !important;
-  text-decoration: none !important;
-  cursor: pointer !important;
-  text-align: left !important;
-}
-
-.tb-nav-user-item svg {
-  color: var(--tb-primary) !important;
-}
-
-.tb-nav-user-item:hover {
-  color: var(--tb-primary) !important;
-  background: rgba(37, 99, 235, 0.09) !important;
-}
-
-.tb-nav-user-logout,
-.tb-nav-user-logout svg {
-  color: var(--tb-danger) !important;
-}
-
-@media (max-width: 900px) {
-  .tb-main-nav {
-    width: min(100% - 20px, 1180px) !important;
-    top: 8px !important;
-    margin-top: 8px !important;
-  }
-
-  .tb-nav-shell {
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    min-height: auto !important;
-  }
-
-  .tb-nav-mobile-btn {
-    display: grid !important;
-    place-items: center !important;
-  }
-
-  .tb-nav-panel {
-    flex-basis: 100% !important;
-    width: 100% !important;
-    display: none !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    padding-top: 12px !important;
-  }
-
-  .tb-nav-panel-open {
-    display: flex !important;
-  }
-
-  .tb-nav-links,
-  .tb-nav-actions,
-  .tb-nav-auth {
-    width: 100% !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
-  }
-
-  .tb-nav-link,
-  .tb-nav-theme-btn,
-  .tb-nav-login,
-  .tb-nav-register,
-  .tb-nav-user-btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  .tb-nav-user-wrap {
-    width: 100% !important;
-  }
-
-  .tb-nav-user-btn {
-    justify-content: space-between !important;
-  }
-
-  .tb-nav-user-menu {
-    position: static !important;
-    width: 100% !important;
-    margin-top: 10px !important;
-  }
-}
-
-/* =========================================================
    ImgBB upload field
    ========================================================= */
 
@@ -6103,11 +5768,6 @@ body.dark-theme {
     linear-gradient(135deg, #07111f, #0f172a) !important;
 }
 
-body.dark-theme .tb-nav-shell,
-body.dark-theme .tb-nav-user-menu,
-body.dark-theme .tb-nav-user-btn,
-body.dark-theme .tb-nav-theme-btn,
-body.dark-theme .tb-nav-login,
 body.dark-theme .home-section,
 body.dark-theme .workflow-section,
 body.dark-theme .transport-tile,
@@ -6148,7 +5808,6 @@ body.dark-theme .seat-selection-box,
 body.dark-theme .advertise-limit-track,
 body.dark-theme .empty-state,
 body.dark-theme .mini-empty,
-body.dark-theme .tb-nav-user-head,
 body.dark-theme .ticket-image-upload-content,
 body.dark-theme .ticket-image-preview-card,
 body.dark-theme .recent-payment-row {
@@ -6163,13 +5822,6 @@ body.dark-theme h3,
 body.dark-theme h4,
 body.dark-theme h5,
 body.dark-theme h6,
-body.dark-theme .tb-nav-brand,
-body.dark-theme .tb-nav-link,
-body.dark-theme .tb-nav-user-btn strong,
-body.dark-theme .tb-nav-theme-btn,
-body.dark-theme .tb-nav-login,
-body.dark-theme .tb-nav-user-item,
-body.dark-theme .tb-nav-user-head h4,
 body.dark-theme .dashboard-panel h1,
 body.dark-theme .dashboard-stat-card h3,
 body.dark-theme .profile-card h2,
@@ -6225,7 +5877,6 @@ body.dark-theme .booking-card-main p,
 body.dark-theme .request-card-head p,
 body.dark-theme .chart-card-head p,
 body.dark-theme .admin-vendor-line,
-body.dark-theme .tb-nav-user-head p,
 body.dark-theme .ticket-image-upload-content span,
 body.dark-theme .ticket-image-preview-card p,
 body.dark-theme .recent-payment-row p,
