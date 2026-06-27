@@ -17,6 +17,8 @@ import RoleRoute from "./RoleRoute";
 import TicketDetails from "../pages/tickets/TicketDetails";
 import MyBookings from "../pages/dashboard/user/MyBookings";
 import Transactions from "../pages/dashboard/user/Transactions";
+import AddTicket from "../pages/dashboard/vendor/AddTicket";
+import VendorMyTickets from "../pages/dashboard/vendor/VendorMyTickets";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -83,10 +85,7 @@ const router = createBrowserRouter([
                         path: "add-ticket",
                         element: (
                             <RoleRoute allowedRoles={["vendor"]}>
-                                <DashboardPlaceholder
-                                    title="Add Ticket"
-                                    description="Vendor ticket creation form will be added here."
-                                />
+                                <AddTicket />
                             </RoleRoute>
                         ),
                     },
@@ -94,10 +93,7 @@ const router = createBrowserRouter([
                         path: "my-tickets",
                         element: (
                             <RoleRoute allowedRoles={["vendor"]}>
-                                <DashboardPlaceholder
-                                    title="My Tickets"
-                                    description="Vendor added ticket list, update, and delete actions will be added here."
-                                />
+                                <VendorMyTickets />
                             </RoleRoute>
                         ),
                     },
