@@ -6554,3 +6554,64 @@ body.dark-theme .ticket-image-preview-card p {
     height: 190px;
   }
 }
+
+/* =========================================================
+   Booking modal navbar overflow fix
+   ========================================================= */
+
+.booking-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 3000000 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding: 120px 16px 32px !important;
+  background: rgba(2, 6, 23, 0.74) !important;
+  backdrop-filter: blur(12px) !important;
+  overflow-y: auto !important;
+}
+
+.booking-modal {
+  position: relative !important;
+  width: min(720px, 100%) !important;
+  max-height: calc(100vh - 150px) !important;
+  overflow-y: auto !important;
+  margin: 0 auto !important;
+  z-index: 3000001 !important;
+}
+
+.modal-close-btn {
+  position: sticky !important;
+  top: 0 !important;
+  margin-left: auto !important;
+  z-index: 3000002 !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(148, 163, 184, 0.28) !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18) !important;
+}
+
+body.dark-theme .modal-close-btn {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+@media (max-width: 640px) {
+  .booking-modal-overlay {
+    padding: 96px 12px 24px !important;
+  }
+
+  .booking-modal {
+    max-height: calc(100vh - 120px) !important;
+  }
+}
