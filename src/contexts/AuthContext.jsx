@@ -1,5 +1,8 @@
 import { createContext, useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+
 import axiosInstance from "../api/axiosInstance";
+import { auth } from "../config/firebase.config";
 
 export const AuthContext = createContext(null);
 
@@ -9,56 +12,77 @@ const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const saveUserAndCreateToken = async (userInfo) => {
-    const userPayload = {
-      name: userInfo.name,
-      email: userInfo.email,
-      photoURL: userInfo.photoURL || "",
+  const setAuthData = (profile, userRole) => {
+    const loggedUser = {
+      name: profile?.name || "TicketBari User",
+      email: profile?.email,
+      photoURL: profile?.photoURL || "",
     };
 
-    await axiosInstance.post("/api/users", userPayload);
-
-    await axiosInstance.post("/api/jwt/create", {
-      email: userPayload.email,
-    });
-
-    const profileResponse = await axiosInstance.get("/api/users/me");
-    const roleResponse = await axiosInstance.get("/api/users/role");
-
-    setUser(userPayload);
-    setDbUser(profileResponse.data.user);
-    setRole(roleResponse.data.role);
-
-    return profileResponse.data.user;
+    setUser(loggedUser);
+    setDbUser(profile);
+    setRole(userRole || profile?.role || "user");
   };
 
-  const loginUser = async ({ email, name, photoURL }) => {
+  const saveUserAndCreateToken = async (userInfo) => {
     setLoading(true);
 
     try {
-      const loggedUser = await saveUserAndCreateToken({
-        email,
-        name,
-        photoURL,
+      await axiosInstance.post("/api/users", userInfo);
+
+      await axiosInstance.post("/api/jwt/create", {
+        email: userInfo.email,
       });
 
-      return loggedUser;
+      const profileResponse = await axiosInstance.get("/api/users/me");
+      const roleResponse = await axiosInstance.get("/api/users/role");
+
+      const profile = profileResponse.data.user;
+      const userRole = roleResponse.data.role;
+
+      setAuthData(profile, userRole);
+
+      return profile;
     } finally {
       setLoading(false);
     }
   };
 
-  const registerUser = async ({ email, name, photoURL }) => {
+  const loginUser = async (userInfo) => {
+    return saveUserAndCreateToken(userInfo);
+  };
+
+  const registerUser = async (userInfo) => {
+    return saveUserAndCreateToken(userInfo);
+  };
+
+  const googleLoginUser = async (firebaseUser) => {
+    const userInfo = {
+      name: firebaseUser?.displayName || "Google User",
+      email: firebaseUser?.email,
+      photoURL: firebaseUser?.photoURL || "",
+    };
+
+    return saveUserAndCreateToken(userInfo);
+  };
+
+  const refreshUser = async () => {
     setLoading(true);
 
     try {
-      const registeredUser = await saveUserAndCreateToken({
-        email,
-        name,
-        photoURL,
-      });
+      await axiosInstance.get("/api/jwt/me");
 
-      return registeredUser;
+      const profileResponse = await axiosInstance.get("/api/users/me");
+      const roleResponse = await axiosInstance.get("/api/users/role");
+
+      const profile = profileResponse.data.user;
+      const userRole = roleResponse.data.role;
+
+      setAuthData(profile, userRole);
+    } catch {
+      setUser(null);
+      setDbUser(null);
+      setRole(null);
     } finally {
       setLoading(false);
     }
@@ -68,37 +92,15 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
 
     try {
+      if (auth) {
+        await signOut(auth);
+      }
+
       await axiosInstance.post("/api/jwt/logout");
+    } finally {
       setUser(null);
       setDbUser(null);
       setRole(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const refreshUser = async () => {
-    setLoading(true);
-
-    try {
-      const profileResponse = await axiosInstance.get("/api/users/me");
-      const roleResponse = await axiosInstance.get("/api/users/role");
-
-      const profileUser = profileResponse.data.user;
-
-      setUser({
-        name: profileUser.name,
-        email: profileUser.email,
-        photoURL: profileUser.photoURL || "",
-      });
-
-      setDbUser(profileUser);
-      setRole(roleResponse.data.role);
-    } catch (error) {
-      setUser(null);
-      setDbUser(null);
-      setRole(null);
-    } finally {
       setLoading(false);
     }
   };
@@ -114,8 +116,10 @@ const AuthProvider = ({ children }) => {
     loading,
     loginUser,
     registerUser,
+    googleLoginUser,
     logoutUser,
     refreshUser,
+    saveUserAndCreateToken,
   };
 
   return (

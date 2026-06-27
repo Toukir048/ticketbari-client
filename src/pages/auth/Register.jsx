@@ -1,13 +1,24 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { FaGoogle, FaTicketAlt } from "react-icons/fa";
+import { signInWithPopup } from "firebase/auth";
+
 import useAuth from "../../hooks/useAuth";
+import {
+  auth,
+  googleProvider,
+  isFirebaseReady,
+} from "../../config/firebase.config";
 
 const Register = () => {
-  const { registerUser, loading } = useAuth();
+  const { registerUser, googleLoginUser, loading } = useAuth();
+
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -26,7 +37,11 @@ const Register = () => {
     event.preventDefault();
 
     if (!formData.name || !formData.email) {
-      Swal.fire("Missing Info", "Name and email are required.", "warning");
+      Swal.fire(
+        "Missing Information",
+        "Please enter your name and email.",
+        "warning"
+      );
       return;
     }
 
@@ -40,12 +55,12 @@ const Register = () => {
       Swal.fire({
         icon: "success",
         title: "Registration Successful",
-        text: "Your TicketBari account is ready!",
+        text: "Welcome to TicketBari!",
         timer: 1400,
         showConfirmButton: false,
       });
 
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (error) {
       Swal.fire(
         "Registration Failed",
@@ -55,12 +70,37 @@ const Register = () => {
     }
   };
 
-  const handleGoogleRegister = () => {
-    Swal.fire(
-      "Coming Next",
-      "Google registration functionality will be connected in the next auth commit.",
-      "info"
-    );
+  const handleGoogleRegister = async () => {
+    if (!isFirebaseReady || !auth) {
+      Swal.fire(
+        "Firebase Config Missing",
+        "Please add Firebase environment variables in .env.local",
+        "warning"
+      );
+      return;
+    }
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+
+      await googleLoginUser(result.user);
+
+      Swal.fire({
+        icon: "success",
+        title: "Google Registration Successful",
+        text: "Welcome to TicketBari!",
+        timer: 1400,
+        showConfirmButton: false,
+      });
+
+      navigate(from, { replace: true });
+    } catch (error) {
+      Swal.fire(
+        "Google Registration Failed",
+        error.message || "Something went wrong.",
+        "error"
+      );
+    }
   };
 
   return (
@@ -90,9 +130,9 @@ const Register = () => {
         <div className="auth-badge">Join TicketBari</div>
 
         <h1>Create Account</h1>
+
         <p className="auth-subtitle">
-          Register once and start booking transport tickets with a modern
-          dashboard experience.
+          Register to book tickets, track bookings, and access your dashboard.
         </p>
 
         <form onSubmit={handleRegister} className="auth-form">
@@ -101,7 +141,7 @@ const Register = () => {
             <input
               type="text"
               name="name"
-              placeholder="Your full name"
+              placeholder="Your name"
               value={formData.name}
               onChange={handleChange}
               required
@@ -138,7 +178,7 @@ const Register = () => {
             whileTap={{ scale: 0.97 }}
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading ? "Creating account..." : "Register"}
           </motion.button>
         </form>
 
@@ -152,13 +192,14 @@ const Register = () => {
           type="button"
           className="google-btn"
           onClick={handleGoogleRegister}
+          disabled={loading}
         >
           <FaGoogle />
-          Continue with Google
+          {loading ? "Please wait..." : "Continue with Google"}
         </button>
 
         <p className="auth-switch">
-          Already have an account? <Link to="/login">Login now</Link>
+          Already have an account? <Link to="/login">Login here</Link>
         </p>
       </motion.div>
     </section>
