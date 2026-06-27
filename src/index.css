@@ -6414,3 +6414,143 @@ body.dark-theme .tb-nav-user-head p {
     margin-top: 10px !important;
   }
 }
+
+/* =========================================================
+   ImgBB upload field for vendor add ticket
+   ========================================================= */
+
+.vendor-ticket-form textarea,
+.vendor-edit-form textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  border-radius: 16px;
+  padding: 13px 14px;
+  color: #0f172a;
+  background: #f8fafc;
+  resize: vertical;
+  font-family: inherit;
+  transition: 0.22s ease;
+}
+
+.vendor-ticket-form textarea:focus,
+.vendor-edit-form textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.13);
+}
+
+.ticket-image-upload-box {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.ticket-image-upload-box input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ticket-image-upload-content {
+  min-height: 170px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 28px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent 36%),
+    #f8fafc;
+  border: 2px dashed #93c5fd;
+  transition: 0.25s ease;
+}
+
+.ticket-image-upload-content svg {
+  color: #2563eb;
+  font-size: 42px;
+}
+
+.ticket-image-upload-content strong {
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.ticket-image-upload-content span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ticket-image-upload-box:hover .ticket-image-upload-content {
+  border-color: #0891b2;
+  background: #eef9ff;
+}
+
+.ticket-image-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 22px;
+  background: #f1f5f9;
+  border: 1px solid #dbe3ef;
+}
+
+.ticket-image-preview-card img {
+  width: 150px;
+  height: 105px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid #dbe3ef;
+}
+
+.ticket-image-preview-card strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.ticket-image-preview-card p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+body.dark-theme .vendor-ticket-form textarea,
+body.dark-theme .vendor-edit-form textarea {
+  color: #e5e7eb;
+  background: #111c2e;
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+body.dark-theme .ticket-image-upload-content,
+body.dark-theme .ticket-image-preview-card {
+  background: #111c2e;
+  border-color: rgba(147, 197, 253, 0.35);
+}
+
+body.dark-theme .ticket-image-upload-content strong,
+body.dark-theme .ticket-image-preview-card strong {
+  color: #f8fafc;
+}
+
+body.dark-theme .ticket-image-upload-content span,
+body.dark-theme .ticket-image-preview-card p {
+  color: #cbd5e1;
+}
+
+@media (max-width: 640px) {
+  .ticket-image-preview-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ticket-image-preview-card img {
+    width: 100%;
+    height: 190px;
+  }
+}
