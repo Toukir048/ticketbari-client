@@ -15,6 +15,8 @@ import NotFound from "../pages/NotFound";
 import PrivateRoute from "./PrivateRoute";
 import RoleRoute from "./RoleRoute";
 import TicketDetails from "../pages/tickets/TicketDetails";
+import MyBookings from "../pages/dashboard/user/MyBookings";
+import Transactions from "../pages/dashboard/user/Transactions";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -65,10 +67,7 @@ const router = createBrowserRouter([
                         path: "my-bookings",
                         element: (
                             <RoleRoute allowedRoles={["user"]}>
-                                <DashboardPlaceholder
-                                    title="My Bookings"
-                                    description="User booked tickets, pay now button, cancel option, and PDF ticket download will be added here."
-                                />
+                                <MyBookings />
                             </RoleRoute>
                         ),
                     },
@@ -76,10 +75,7 @@ const router = createBrowserRouter([
                         path: "transactions",
                         element: (
                             <RoleRoute allowedRoles={["user"]}>
-                                <DashboardPlaceholder
-                                    title="Transaction History"
-                                    description="User payment transaction history will be shown here."
-                                />
+                                <Transactions />
                             </RoleRoute>
                         ),
                     },
