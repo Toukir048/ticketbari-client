@@ -61,14 +61,49 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const loginUser = async (userInfo) => {
-    return saveUserAndCreateToken(userInfo);
-  };
-
   const registerUser = async (userInfo) => {
-    return saveUserAndCreateToken(userInfo);
+    setLoading(true);
+
+    try {
+      const { data, error } = await authClient.signUp.email({
+        name: userInfo.name,
+        email: userInfo.email,
+        password: userInfo.password,
+        image: userInfo.photoURL || "",
+      });
+
+      if (error) {
+        throw new Error(error.message || "Registration failed.");
+      }
+
+      await syncBetterAuthUser();
+
+      return data;
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const loginUser = async (userInfo) => {
+    setLoading(true);
+
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email: userInfo.email,
+        password: userInfo.password,
+      });
+
+      if (error) {
+        throw new Error(error.message || "Login failed.");
+      }
+
+      await syncBetterAuthUser();
+
+      return data;
+    } finally {
+      setLoading(false);
+    }
+  };
   const googleLoginUser = async () => {
     const clientUrl = import.meta.env.VITE_CLIENT_URL || window.location.origin;
 

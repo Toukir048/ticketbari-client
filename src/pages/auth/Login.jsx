@@ -16,6 +16,7 @@ const Login = () => {
 
   const [formData, setFormData] = useState({
     email: "",
+    password: "",
   });
 
   const handleChange = (event) => {
@@ -39,6 +40,7 @@ const Login = () => {
       await loginUser({
         email: formData.email,
         name: nameFromEmail,
+        password: formData.password,
         photoURL: "",
       });
 
@@ -61,16 +63,16 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
-  try {
-    await googleLoginUser();
-  } catch (error) {
-    Swal.fire(
-      "Google Login Failed",
-      error.message || "Something went wrong.",
-      "error"
-    );
-  }
-};
+    try {
+      await googleLoginUser();
+    } catch (error) {
+      Swal.fire(
+        "Google Login Failed",
+        error.message || "Something went wrong.",
+        "error"
+      );
+    }
+  };
 
   return (
     <section className="auth-page">
@@ -116,7 +118,17 @@ const Login = () => {
               required
             />
           </label>
-
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </label>
           <motion.button
             type="submit"
             className="auth-submit-btn"

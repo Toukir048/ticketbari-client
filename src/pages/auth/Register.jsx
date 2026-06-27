@@ -17,8 +17,9 @@ const Register = () => {
     name: "",
     email: "",
     photoURL: "",
+    password: "",
+    confirmPassword: "",
   });
-
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -28,6 +29,15 @@ const Register = () => {
 
   const handleRegister = async (event) => {
     event.preventDefault();
+    if (formData.password.length < 6) {
+      Swal.fire("Weak Password", "Password must be at least 6 characters.", "warning");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      Swal.fire("Password Mismatch", "Password and confirm password must match.", "warning");
+      return;
+    }
 
     if (!formData.name || !formData.email) {
       Swal.fire(
@@ -43,6 +53,7 @@ const Register = () => {
         name: formData.name,
         email: formData.email,
         photoURL: formData.photoURL,
+        password: formData.password,
       });
 
       Swal.fire({
@@ -63,17 +74,17 @@ const Register = () => {
     }
   };
 
- const handleGoogleRegister = async () => {
-  try {
-    await googleLoginUser();
-  } catch (error) {
-    Swal.fire(
-      "Google Registration Failed",
-      error.message || "Something went wrong.",
-      "error"
-    );
-  }
-};
+  const handleGoogleRegister = async () => {
+    try {
+      await googleLoginUser();
+    } catch (error) {
+      Swal.fire(
+        "Google Registration Failed",
+        error.message || "Something went wrong.",
+        "error"
+      );
+    }
+  };
   return (
     <section className="auth-page">
       <motion.div
@@ -139,6 +150,29 @@ const Register = () => {
               placeholder="https://example.com/photo.jpg"
               value={formData.photoURL}
               onChange={handleChange}
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              placeholder="Create a password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Confirm Password
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm your password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
             />
           </label>
 
