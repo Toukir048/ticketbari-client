@@ -23,6 +23,7 @@ import RequestedBookings from "../pages/dashboard/vendor/RequestedBookings";
 import VendorRevenue from "../pages/dashboard/vendor/VendorRevenue";
 import ManageUsers from "../pages/dashboard/admin/ManageUsers";
 import ManageTickets from "../pages/dashboard/admin/ManageTickets";
+import AdvertiseTickets from "../pages/dashboard/admin/AdvertiseTickets";
 
 
 const router = createBrowserRouter([
@@ -139,10 +140,7 @@ const router = createBrowserRouter([
                         path: "advertise-tickets",
                         element: (
                             <RoleRoute allowedRoles={["admin"]}>
-                                <DashboardPlaceholder
-                                    title="Advertise Tickets"
-                                    description="Admin advertised ticket control with maximum 6 selected tickets will be added here."
-                                />
+                                <AdvertiseTickets />
                             </RoleRoute>
                         ),
                     },
