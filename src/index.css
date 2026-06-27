@@ -5992,6 +5992,16 @@ body.dark-theme .ticket-cut {
   border-color: var(--tb-dark-border) !important;
 }
 
+body.dark-theme .ticket-details-btn {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.28) !important;
+}
+
+body.dark-theme .ticket-details-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #6d28d9) !important;
+}
+
 body.dark-theme a {
   color: inherit;
 }
