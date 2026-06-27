@@ -21,6 +21,8 @@ import AddTicket from "../pages/dashboard/vendor/AddTicket";
 import VendorMyTickets from "../pages/dashboard/vendor/VendorMyTickets";
 import RequestedBookings from "../pages/dashboard/vendor/RequestedBookings";
 import VendorRevenue from "../pages/dashboard/vendor/VendorRevenue";
+import ManageUsers from "../pages/dashboard/admin/ManageUsers";
+import ManageTickets from "../pages/dashboard/admin/ManageTickets";
 
 
 const router = createBrowserRouter([
@@ -121,10 +123,7 @@ const router = createBrowserRouter([
                         path: "manage-users",
                         element: (
                             <RoleRoute allowedRoles={["admin"]}>
-                                <DashboardPlaceholder
-                                    title="Manage Users"
-                                    description="Admin user role management and fraud vendor marking will be added here."
-                                />
+                                <ManageUsers />
                             </RoleRoute>
                         ),
                     },
@@ -132,10 +131,7 @@ const router = createBrowserRouter([
                         path: "manage-tickets",
                         element: (
                             <RoleRoute allowedRoles={["admin"]}>
-                                <DashboardPlaceholder
-                                    title="Manage Tickets"
-                                    description="Admin ticket approval and rejection table will be added here."
-                                />
+                                <ManageTickets />
                             </RoleRoute>
                         ),
                     },
