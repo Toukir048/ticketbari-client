@@ -29,6 +29,11 @@ const statusClassMap = {
   paid: "status-paid",
 };
 
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const hasValidStripeKey =
+  stripeKey &&
+  (stripeKey.startsWith("pk_test_") || stripeKey.startsWith("pk_live_"));
+
 const MyBookings = () => {
   const queryClient = useQueryClient();
 
@@ -72,6 +77,14 @@ const MyBookings = () => {
 
   const paymentMutation = useMutation({
     mutationFn: async (bookingId) => {
+      if (!hasValidStripeKey) {
+        const response = await axiosInstance.post("/api/payments/mock-success", {
+          bookingId,
+        });
+
+        return response.data;
+      }
+
       try {
         await axiosInstance.post("/api/payments/create-payment-intent", {
           bookingId,
@@ -127,7 +140,9 @@ const MyBookings = () => {
   const handlePayNow = async (bookingId) => {
     const result = await Swal.fire({
       title: "Confirm Payment?",
-      text: "This will complete payment using development demo payment if Stripe key is not configured.",
+      text: hasValidStripeKey
+        ? "This will continue with the configured Stripe payment flow."
+        : "Stripe is not configured, so this will complete payment in Demo Payment Mode.",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Pay Now",
