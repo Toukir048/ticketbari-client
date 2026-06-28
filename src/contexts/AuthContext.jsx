@@ -1,5 +1,4 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-
 import axiosInstance from "../api/axiosInstance";
 import { authClient } from "../lib/auth-client";
 
@@ -15,7 +14,7 @@ const AuthProvider = ({ children }) => {
     const loggedUser = {
       name: profile?.name || "TicketBari User",
       email: profile?.email,
-      photoURL: profile?.photoURL || "",
+      photoURL: profile?.photoURL || profile?.image || "",
     };
 
     setUser(loggedUser);
@@ -23,43 +22,30 @@ const AuthProvider = ({ children }) => {
     setRole(userRole || profile?.role || "user");
   };
 
-  const saveUserAndCreateToken = async (userInfo) => {
-    setLoading(true);
+  const loadProfileAfterJwt = async () => {
+    const profileResponse = await axiosInstance.get("/api/users/me");
+    const roleResponse = await axiosInstance.get("/api/users/role");
 
-    try {
-      await axiosInstance.post("/api/users", userInfo);
+    const profile = profileResponse.data.user;
+    const userRole = roleResponse.data.role;
 
-      await axiosInstance.post("/api/jwt/create", {
-        email: userInfo.email,
-      });
-
-      const profileResponse = await axiosInstance.get("/api/users/me");
-      const roleResponse = await axiosInstance.get("/api/users/role");
-
-      const profile = profileResponse.data.user;
-      const userRole = roleResponse.data.role;
-
-      setAuthData(profile, userRole);
-
-      return profile;
-    } finally {
-      setLoading(false);
-    }
+    setAuthData(profile, userRole);
+    return profile;
   };
 
-  const syncBetterAuthUser = useCallback(async () => {
-    setLoading(true);
+  const createLocalJwtSession = async (userInfo) => {
+    await axiosInstance.post("/api/users", {
+      name: userInfo.name || "TicketBari User",
+      email: userInfo.email,
+      photoURL: userInfo.photoURL || "",
+    });
 
-    try {
-      const response = await axiosInstance.get("/api/better-auth/sync");
+    await axiosInstance.post("/api/jwt/create", {
+      email: userInfo.email,
+    });
 
-      setAuthData(response.data.user, response.data.role);
-
-      return response.data.user;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    return loadProfileAfterJwt();
+  };
 
   const registerUser = async (userInfo) => {
     setLoading(true);
@@ -76,7 +62,11 @@ const AuthProvider = ({ children }) => {
         throw new Error(error.message || "Registration failed.");
       }
 
-      await syncBetterAuthUser();
+      await createLocalJwtSession({
+        name: userInfo.name,
+        email: userInfo.email,
+        photoURL: userInfo.photoURL || "",
+      });
 
       return data;
     } finally {
@@ -97,13 +87,32 @@ const AuthProvider = ({ children }) => {
         throw new Error(error.message || "Login failed.");
       }
 
-      await syncBetterAuthUser();
+      await axiosInstance.post("/api/jwt/create", {
+        email: userInfo.email,
+      });
+
+      await loadProfileAfterJwt();
 
       return data;
     } finally {
       setLoading(false);
     }
   };
+
+  const syncBetterAuthUser = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      const response = await axiosInstance.get("/api/better-auth/sync");
+
+      setAuthData(response.data.user, response.data.role);
+
+      return response.data.user;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const googleLoginUser = async () => {
     const clientUrl = import.meta.env.VITE_CLIENT_URL || window.location.origin;
 
@@ -120,15 +129,10 @@ const AuthProvider = ({ children }) => {
 
     try {
       await axiosInstance.get("/api/jwt/me");
-
-      const profileResponse = await axiosInstance.get("/api/users/me");
-      const roleResponse = await axiosInstance.get("/api/users/role");
-
-      setAuthData(profileResponse.data.user, roleResponse.data.role);
+      await loadProfileAfterJwt();
     } catch {
       try {
         const response = await axiosInstance.get("/api/better-auth/sync");
-
         setAuthData(response.data.user, response.data.role);
       } catch {
         setUser(null);
@@ -169,7 +173,6 @@ const AuthProvider = ({ children }) => {
     syncBetterAuthUser,
     logoutUser,
     refreshUser,
-    saveUserAndCreateToken,
   };
 
   return (
