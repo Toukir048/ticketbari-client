@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -8,13 +9,50 @@ import {
   FaUsers,
   FaWallet,
 } from "react-icons/fa";
+
 import useAuth from "../hooks/useAuth";
 
+const getInitials = (name = "") => {
+  return (
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "U"
+  );
+};
+
+const isValidImageUrl = (url) => {
+  return (
+    typeof url === "string" &&
+    url.trim() !== "" &&
+    url !== "undefined" &&
+    url !== "null" &&
+    (url.startsWith("http://") ||
+      url.startsWith("https://") ||
+      url.startsWith("data:image"))
+  );
+};
+
 const DashboardLayout = () => {
-  const { user, role } = useAuth();
+  const { user, dbUser, role } = useAuth();
+  const [imageError, setImageError] = useState(false);
+
+  const profileName = user?.name || dbUser?.name || "TicketBari User";
+  const profileEmail = user?.email || dbUser?.email || "";
+  const profileRole = role || dbUser?.role || "user";
+  const profilePhoto =
+    user?.photoURL || user?.image || dbUser?.photoURL || dbUser?.image || "";
+
+  const shouldShowImage = isValidImageUrl(profilePhoto) && !imageError;
 
   const linkClass = ({ isActive }) =>
     isActive ? "dashboard-link active-dashboard-link" : "dashboard-link";
+
+  useEffect(() => {
+    setImageError(false);
+  }, [profilePhoto]);
 
   return (
     <section className="dashboard-shell">
@@ -26,16 +64,20 @@ const DashboardLayout = () => {
       >
         <div className="dashboard-user-card">
           <div className="dashboard-avatar">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt={user.name} />
+            {shouldShowImage ? (
+              <img
+                src={profilePhoto}
+                alt={profileName}
+                onError={() => setImageError(true)}
+              />
             ) : (
-              <span>{user?.name?.charAt(0)?.toUpperCase() || "U"}</span>
+              <span>{getInitials(profileName)}</span>
             )}
           </div>
 
-          <h3>{user?.name || "TicketBari User"}</h3>
-          <p>{user?.email}</p>
-          <span className="role-pill">{role || "user"}</span>
+          <h3>{profileName}</h3>
+          <p>{profileEmail}</p>
+          <span className="role-pill">{profileRole}</span>
         </div>
 
         <nav className="dashboard-menu">
@@ -49,7 +91,7 @@ const DashboardLayout = () => {
             My Profile
           </NavLink>
 
-          {role === "user" && (
+          {profileRole === "user" && (
             <>
               <NavLink to="/dashboard/my-bookings" className={linkClass}>
                 <FaTicketAlt />
@@ -63,7 +105,7 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {role === "vendor" && (
+          {profileRole === "vendor" && (
             <>
               <NavLink to="/dashboard/add-ticket" className={linkClass}>
                 <FaPlusCircle />
@@ -87,7 +129,7 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {role === "admin" && (
+          {profileRole === "admin" && (
             <>
               <NavLink to="/dashboard/manage-users" className={linkClass}>
                 <FaUsers />

@@ -17,6 +17,7 @@ import {
 } from "react-icons/fa";
 
 import axiosInstance from "../../api/axiosInstance";
+import PageMeta from "../../components/shared/MetaProvider";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 
 const transportIcons = {
@@ -309,27 +310,51 @@ const TicketDetails = () => {
   };
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading ticket details..." />;
+    return (
+      <>
+        <PageMeta
+          title="Ticket Details"
+          description="Loading ticket route details, pricing, and booking options."
+        />
+        <LoadingSpinner message="Loading ticket details..." />
+      </>
+    );
   }
 
   if (isError || !ticketData) {
     return (
-      <section className="details-error-card">
-        <h1>Ticket not found</h1>
-        <p>Could not load this ticket. Please try again.</p>
-        <button type="button" onClick={refetch}>
-          Retry
-        </button>
-      </section>
+      <>
+        <PageMeta
+          title="Ticket Not Found"
+          description="This TicketBari ticket could not be loaded."
+          noIndex
+        />
+        <section className="details-error-card">
+          <h1>Ticket not found</h1>
+          <p>Could not load this ticket. Please try again.</p>
+          <button type="button" onClick={refetch}>
+            Retry
+          </button>
+        </section>
+      </>
     );
   }
 
   return (
-    <section className="ticket-details-page">
-      <Link to="/all-tickets" className="back-link">
-        <FaArrowLeft />
-        Back to tickets
-      </Link>
+    <>
+      <PageMeta
+        title={ticketTitle}
+        description={`Book ${ticketTitle} from ${
+          ticketData.from || "your origin"
+        } to ${ticketData.to || "your destination"} with TicketBari.`}
+        image={ticketImage}
+        type="article"
+      />
+      <section className="ticket-details-page">
+        <Link to="/all-tickets" className="back-link">
+          <FaArrowLeft />
+          Back to tickets
+        </Link>
 
       <div className="ticket-details-shell">
         <motion.div
@@ -454,8 +479,8 @@ const TicketDetails = () => {
         </motion.div>
       </div>
 
-      {isModalOpen && (
-        <div className="booking-modal-overlay">
+        {isModalOpen && (
+          <div className="booking-modal-overlay">
           <motion.div
             className="booking-modal"
             initial={{ opacity: 0, y: 40, scale: 0.94 }}
@@ -548,9 +573,10 @@ const TicketDetails = () => {
               </button>
             </form>
           </motion.div>
-        </div>
-      )}
-    </section>
+          </div>
+        )}
+      </section>
+    </>
   );
 };
 

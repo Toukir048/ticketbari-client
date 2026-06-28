@@ -1,9 +1,46 @@
+import { useEffect, useState } from "react";
 import { FaEnvelope, FaIdBadge, FaShieldAlt, FaUserCircle } from "react-icons/fa";
 
 import useAuth from "../../hooks/useAuth";
 
+const getInitials = (name = "") => {
+  return (
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "U"
+  );
+};
+
+const isValidImageUrl = (url) => {
+  return (
+    typeof url === "string" &&
+    url.trim() !== "" &&
+    url !== "undefined" &&
+    url !== "null" &&
+    (url.startsWith("http://") ||
+      url.startsWith("https://") ||
+      url.startsWith("data:image"))
+  );
+};
+
 const Profile = () => {
   const { user, dbUser, role } = useAuth();
+  const [imageError, setImageError] = useState(false);
+
+  const profileName = user?.name || dbUser?.name || "TicketBari User";
+  const profileEmail = user?.email || dbUser?.email || "Not provided";
+  const profileRole = role || dbUser?.role || "user";
+  const profilePhoto =
+    user?.photoURL || user?.image || dbUser?.photoURL || dbUser?.image || "";
+
+  const shouldShowImage = isValidImageUrl(profilePhoto) && !imageError;
+
+  useEffect(() => {
+    setImageError(false);
+  }, [profilePhoto]);
 
   return (
     <section className="dashboard-page">
@@ -11,21 +48,22 @@ const Profile = () => {
         <div className="profile-cover-glow"></div>
 
         <div className="profile-main">
-          {user?.photoURL ? (
+          {shouldShowImage ? (
             <img
-              src={user.photoURL}
-              alt={user.name || "User"}
+              src={profilePhoto}
+              alt={profileName}
               className="profile-page-avatar"
+              onError={() => setImageError(true)}
             />
           ) : (
-            <div className="profile-page-avatar profile-page-avatar-fallback">
-              {user?.name?.charAt(0)?.toUpperCase() || "U"}
+            <div className="profile-page-avatar-fallback">
+              {getInitials(profileName)}
             </div>
           )}
 
           <div>
             <p className="section-kicker">Account Profile</p>
-            <h2>{user?.name || dbUser?.name || "TicketBari User"}</h2>
+            <h2>{profileName}</h2>
             <p className="profile-subtitle">
               Manage your TicketBari account identity and access role.
             </p>
@@ -36,19 +74,19 @@ const Profile = () => {
           <div className="profile-info-box">
             <FaUserCircle />
             <span>Name</span>
-            <strong>{user?.name || dbUser?.name || "Not provided"}</strong>
+            <strong>{profileName}</strong>
           </div>
 
           <div className="profile-info-box">
             <FaEnvelope />
             <span>Email</span>
-            <strong>{user?.email || dbUser?.email || "Not provided"}</strong>
+            <strong>{profileEmail}</strong>
           </div>
 
           <div className="profile-info-box">
             <FaShieldAlt />
             <span>Role</span>
-            <strong className="role-badge">{role || dbUser?.role || "user"}</strong>
+            <strong className="role-badge">{profileRole}</strong>
           </div>
 
           <div className="profile-info-box">
